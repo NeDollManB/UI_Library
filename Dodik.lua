@@ -1,3 +1,8 @@
+-- Roblox UI Library
+-- Corrected for loadstring usage
+-- This is a basic UI library inspired by the provided images and description.
+-- It uses Roblox's built-in UI elements.
+
 local Library = {}
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -41,7 +46,7 @@ local CheatName = "@dLame_sheet"  -- Change this to your cheat name
 local function UpdateStatus()
     local fps = math.floor(1 / RunService.RenderStepped:Wait())
     local time = os.date("%H:%M")
-    StatusText.Text = CheatName .. " d111 " .. fps .. " fps " .. time  -- Adjust as per image
+    StatusText.Text = CheatName .. " d111 " .. fps .. " fps " .. time
 end
 RunService.RenderStepped:Connect(UpdateStatus)
 
@@ -103,7 +108,7 @@ function Library:CreateWindow(title)
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Right
     TitleLabel.Parent = MainFrame
 
-    -- Tab Container (left side, but user said "spраво" meaning right? Adjusting to right side for tabs)
+    -- Tab Container (right side for tabs)
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Size = UDim2.new(0.2, 0, 1, -30)
     TabContainer.Position = UDim2.new(0.8, 0, 0, 30)
@@ -163,17 +168,15 @@ function Library:CreateWindow(title)
         tab.Content.Visible = true
         currentTab = tab
 
-        -- Show first section if any
         if #tab.Sections > 0 then
             SectionContainer.Visible = true
             ShowSection(tab.Sections[1])
         else
             SectionContainer.Visible = false
-            ElementContainer.Visible = true  -- If no sections, show elements directly?
+            ElementContainer.Visible = true
         end
     end
 
-    -- Current section
     local currentSection = nil
     local function ShowSection(section)
         if currentSection then
@@ -183,10 +186,8 @@ function Library:CreateWindow(title)
         section.ElementContainer.Visible = true
         section.Button.TextColor3 = UI_THEME.Accent
         currentSection = section
-        ElementContainer = section.ElementContainer  -- Update global reference? No, elements are per section.
     end
 
-    -- Create Tab
     function Window:CreateTab(name)
         local Tab = {}
         Tab.Name = name
@@ -197,7 +198,6 @@ function Library:CreateWindow(title)
         Tab.Content.Parent = ContentContainer
         Tab.Content.Visible = false
 
-        -- Tab Button (on right)
         local TabButton = Instance.new("TextButton")
         TabButton.Size = UDim2.new(1, 0, 0, 30)
         TabButton.BackgroundColor3 = UI_THEME.SectionBackground
@@ -214,20 +214,17 @@ function Library:CreateWindow(title)
 
         table.insert(Window.Tabs, Tab)
 
-        -- If first tab, show it
         if #Window.Tabs == 1 then
             ShowTab(Tab)
         end
 
-        -- Create Section in Tab
         function Tab:CreateSection(name)
             local Section = {}
             Section.Name = name
             Section.Elements = {}
 
-            -- Section Button (top horizontal)
             local SectionButton = Instance.new("TextButton")
-            SectionButton.Size = UDim2.new(0, 100, 1, 0)  -- Auto width later
+            SectionButton.Size = UDim2.new(0, 100, 1, 0)
             SectionButton.BackgroundTransparency = 1
             SectionButton.Text = name
             SectionButton.TextColor3 = UI_THEME.Text
@@ -240,7 +237,6 @@ function Library:CreateWindow(title)
                 ShowSection(Section)
             end)
 
-            -- Element Container for this section
             local SecElementContainer = Instance.new("ScrollingFrame")
             SecElementContainer.Size = UDim2.new(1, 0, 1, -30)
             SecElementContainer.Position = UDim2.new(0, 0, 0, 30)
@@ -259,17 +255,12 @@ function Library:CreateWindow(title)
 
             table.insert(Tab.Sections, Section)
 
-            -- If first section, show it
             if #Tab.Sections == 1 then
                 ShowSection(Section)
             end
 
-            -- Adjust section button sizes
             SectionButton.Size = UDim2.new(0, SectionButton.TextBounds.X + 20, 1, 0)
 
-            -- Create UI Elements
-
-            -- Button
             function Section:CreateButton(name, callback)
                 local Button = Instance.new("TextButton")
                 Button.Size = UDim2.new(1, 0, 0, 30)
@@ -284,7 +275,6 @@ function Library:CreateWindow(title)
                 Button.MouseButton1Click:Connect(callback or function() end)
             end
 
-            -- Toggle
             function Section:CreateToggle(name, default, callback)
                 local enabled = default or false
 
@@ -318,7 +308,6 @@ function Library:CreateWindow(title)
                 end)
             end
 
-            -- Input (TextBox)
             function Section:CreateInput(name, placeholder, callback)
                 local InputFrame = Instance.new("Frame")
                 InputFrame.Size = UDim2.new(1, 0, 0, 30)
@@ -354,7 +343,6 @@ function Library:CreateWindow(title)
                 end)
             end
 
-            -- Color Picker (simple, uses TextBox for hex)
             function Section:CreateColorPicker(name, default, callback)
                 local color = default or Color3.fromRGB(255, 255, 255)
 
@@ -401,7 +389,6 @@ function Library:CreateWindow(title)
                 end)
             end
 
-            -- Slider
             function Section:CreateSlider(name, min, max, default, callback)
                 local value = default or min
 
@@ -465,7 +452,6 @@ function Library:CreateWindow(title)
                 end)
             end
 
-            -- Dropdown
             function Section:CreateDropdown(name, options, default, callback)
                 local selected = default or options[1]
 
@@ -541,7 +527,6 @@ function Library:CreateWindow(title)
         return Tab
     end
 
-    -- Toggle UI with Insert key
     UIS.InputBegan:Connect(function(input)
         if input.KeyCode == Enum.KeyCode.Insert then
             Window.Visible = not Window.Visible
